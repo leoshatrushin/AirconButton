@@ -50,6 +50,7 @@ app.get('/stream', function streamToggles(_, res) {
 
 let toggleInProgress = false;
 app.post('/toggle', express.json(), async function toggle(_, res) {
+    console.log('toggle request');
     if (toggleInProgress) {
         res.writeHead(429);
         res.end();

@@ -19,7 +19,7 @@ const tcpServer = net.createServer(socket => {
     socket.on('data', async data => {
         // concatenate data to buffer
         streamReader.readInto(data);
-        console.log('data');
+        console.log('sensor response');
 
         // handle authentication
         if (!sensorAuthenticated) {
@@ -80,9 +80,9 @@ export async function sendToggle() {
                 settled = true;
                 clearTimeout(timeout);
                 if (status == SENSOR_SUCCESS) {
-                    tcpEvent.emit('success');
+                    resolve();
                 } else {
-                    tcpEvent.emit('failure');
+                    reject('sensor failed to toggle');
                 }
             }
             tcpEvent.once('response', onResponse);
