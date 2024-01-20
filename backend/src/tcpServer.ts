@@ -80,6 +80,7 @@ export async function sendToggle() {
                 settled = true;
                 clearTimeout(timeout);
                 if (status == SENSOR_SUCCESS) {
+                    state.status = state.status ? 0 : 1;
                     resolve();
                 } else {
                     reject('sensor failed to toggle');
