@@ -39,7 +39,9 @@ app.get('/stream', function streamToggles(_, res) {
     function onToggle(toggle: number) {
         res.write(`data: ${toggle}\n\n`);
     }
-    appEvent.on('success', onToggle);
+    appEvent.on('success', (toggle: number) => {
+        onToggle(toggle);
+    });
     res.on('close', () => {
         appEvent.removeListener('success', onToggle);
     });
