@@ -1,0 +1,54 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+html,
+body {
+    width: 100%;
+    height: 100%;
+}
+
+body {
+    background-color: #f5f5f5;
+    /* background-image: url('./snakes.jpeg'); */
+    /* background-size: cover; */
+    /* background-attachment: fixed; */
+    /* background-repeat: no-repeat; */
+}
+
+#body-overlay {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* semi-transparent black */
+    background-color: rgba(0, 0, 0, 0.5);
+    width: 100%;
+    height: 100%;
+    position: fixed;
+    top: 0;
+    left: 0;
+}
+
+#aircon-button {
+    width: 400px;
+    height: 200px;
+    border-radius: 25px;
+}
+
+#aircon-button.on {
+    background-color: #00ff00;
+}
+
+#aircon-button.off {
+    background-color: #ff0000;
+}
+
+#aircon-button.error {
+    background-color: #ff4500;
+}
+
+button:hover {
+    cursor: pointer;
+}

@@ -1,0 +1,15 @@
+**/.DS_Store
+**/.vscode
+
+node_modules/
+
+backend/.env
+backend/dist/
+
+esp/build/
+esp/.cache/
+esp/env*.h
+!esp/envexample.h
+esp/sdkconfig.old
+
+web/src/dist

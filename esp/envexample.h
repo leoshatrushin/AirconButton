@@ -1,0 +1,9 @@
+#define WIFI_SSID "MY_SSID"
+#define WIFI_PASS "MY_PASS"
+#define WIFI_MIN_AUTHMODE WIFI_AUTH_WPA2_PSK
+#define SERVER_HOSTNAME "MY_HOSTNAME"
+#define SERVER_PORT 3000
+#define API_KEY "MY_API_KEY"
+#define CERT_START "_binary_myselfsignedcert_pem_start"
+#define CERT_END "_binary_myselfsignedcert_pem_end"
+#define CFG_SKIP_COMMON_NAME true

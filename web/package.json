@@ -1,0 +1,20 @@
+{
+    "name": "web",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "type": "module",
+    "scripts": {
+        "dev": "vite build --mode dev --watch",
+        "prod": "vite build --mode prod"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "vite": "^5.0.12"
+    },
+    "dependencies": {
+        "dotenv": "^16.3.2"
+    }
+}
