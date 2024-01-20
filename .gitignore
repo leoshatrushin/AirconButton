@@ -10,6 +10,7 @@ esp/build/
 esp/.cache/
 esp/env*.h
 !esp/envexample.h
+esp/.env
 esp/sdkconfig.old
 
 web/dist

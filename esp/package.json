@@ -1,0 +1,20 @@
+{
+  "name": "esp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+        "dev": "tsx watch test-client.ts",
+        "prod": "command -v idf.py &>/dev/null || get_idf; idf.py -p /dev/cu.usbserial-0001 flash monitor"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^20.11.5",
+    "tsx": "^4.7.0"
+  },
+  "dependencies": {
+    "dotenv": "^16.3.2"
+  }
+}
