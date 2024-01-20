@@ -3,7 +3,7 @@ import { StreamReader } from './utils.js';
 import { state } from './state.js';
 import { EventEmitter } from 'node:events';
 
-const SENSOR_TIMEOUT = 500;
+const SENSOR_TIMEOUT = 1500;
 const SENSOR_SUCCESS = 1;
 
 const SENSOR_PORT = process.env.SENSOR_PORT;
