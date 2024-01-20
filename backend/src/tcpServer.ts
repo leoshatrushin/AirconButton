@@ -77,7 +77,9 @@ export async function sendToggle() {
             }, SENSOR_TIMEOUT);
             tcpEvent.on('success', () => {
                 clearTimeout(timeout);
+                console.log('old state', state.status);
                 state.status = state.status ? 0 : 1;
+                console.log('new state', state.status);
                 resolve();
             });
             tcpEvent.on('failure', () => {
