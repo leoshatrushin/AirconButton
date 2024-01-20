@@ -1,6 +1,6 @@
 import net from 'net';
-import { StreamReader } from './utils';
-import { state } from './state';
+import { StreamReader } from './utils.js';
+import { state } from './state.js';
 import { EventEmitter } from 'node:events';
 
 const SENSOR_STATUS_SUCCESS = 1;

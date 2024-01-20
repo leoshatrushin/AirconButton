@@ -1,8 +1,8 @@
 import express from 'express';
-import { authenticateRequest } from './utils';
-import { sendToggle } from './tcpServer';
+import { authenticateRequest } from './utils.js';
+import { sendToggle } from './tcpServer.js';
 import { EventEmitter } from 'node:events';
-import { state } from './state';
+import { state } from './state.js';
 
 const WEB_ROOT_PATH = process.env.WEB_ROOT_PATH;
 const CLIENT_API_KEY = process.env.CLIENT_API_KEY;
