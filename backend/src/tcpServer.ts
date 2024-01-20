@@ -3,6 +3,7 @@ import { StreamReader } from './utils.js';
 import { state } from './state.js';
 import { EventEmitter } from 'node:events';
 
+const SENSOR_TIMEOUT = 500;
 const SENSOR_STATUS_SUCCESS = 1;
 
 const SENSOR_PORT = process.env.SENSOR_PORT;
@@ -30,6 +31,7 @@ const tcpServer = net.createServer(socket => {
                 sensorAuthenticated = true;
                 if (currentSocket) currentSocket.destroy();
                 currentSocket = socket;
+                currentSocket.setNoDelay(true);
                 console.log('sensor authenticated');
             } else {
                 socket.destroy();
@@ -71,7 +73,7 @@ export async function sendToggle() {
             currentSocket.write('1');
             const timeout = setTimeout(() => {
                 reject('sensor not responding');
-            }, 1000);
+            }, SENSOR_TIMEOUT);
             tcpEvent.on('success', () => {
                 clearTimeout(timeout);
                 state.status = state.status ? 0 : 1;
