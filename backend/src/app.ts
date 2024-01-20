@@ -30,6 +30,7 @@ app.use(function authenticate(req, res, next) {
 });
 
 app.get('/stream', function streamToggles(_, res) {
+    console.log('stream request');
     res.writeHead(200, {
         'Content-Type': 'text/event-stream',
         'Cache-Control': 'no-cache',
