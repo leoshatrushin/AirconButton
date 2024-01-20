@@ -4,7 +4,7 @@ import { state } from './state.js';
 import { EventEmitter } from 'node:events';
 
 const SENSOR_TIMEOUT = 500;
-const SENSOR_STATUS_SUCCESS = 1;
+const SENSOR_SUCCESS = 1;
 
 const SENSOR_PORT = process.env.SENSOR_PORT;
 const SENSOR_API_KEY = process.env.SENSOR_API_KEY;
@@ -45,11 +45,7 @@ const tcpServer = net.createServer(socket => {
         while (streamReader.bytesLeft > 0) {
             const statusBuf = streamReader.readBytes(1);
             const sensorStatus = statusBuf[0];
-            if (sensorStatus == SENSOR_STATUS_SUCCESS) {
-                tcpEvent.emit('success');
-            } else {
-                tcpEvent.emit('failure');
-            }
+            tcpEvent.emit('response', sensorStatus);
         }
 
         streamReader.eraseProcessedBytes();
@@ -70,26 +66,26 @@ const tcpServer = net.createServer(socket => {
 
 export async function sendToggle() {
     return new Promise<void>((resolve, reject) => {
+        let settled = false;
         if (currentSocket) {
             currentSocket.write('1');
             const timeout = setTimeout(() => {
+                if (settled) return;
+                settled = true;
                 reject('sensor not responding');
-                tcpEvent.removeListener('success', onSuccessfulToggle);
-                tcpEvent.removeListener('failure', onFailedToggle);
+                tcpEvent.removeListener('response', onResponse);
             }, SENSOR_TIMEOUT);
-            function onSuccessfulToggle() {
+            function onResponse(status: number) {
+                if (settled) return;
+                settled = true;
                 clearTimeout(timeout);
-                state.status = state.status ? 0 : 1;
-                tcpEvent.removeListener('failure', onFailedToggle);
-                resolve();
+                if (status == SENSOR_SUCCESS) {
+                    tcpEvent.emit('success');
+                } else {
+                    tcpEvent.emit('failure');
+                }
             }
-            function onFailedToggle() {
-                clearTimeout(timeout);
-                tcpEvent.removeListener('success', onSuccessfulToggle);
-                reject('sensor failed to toggle');
-            }
-            tcpEvent.on('success', onSuccessfulToggle);
-            tcpEvent.on('failure', onFailedToggle);
+            tcpEvent.once('response', onResponse);
         } else {
             reject('sensor not connected');
         }
