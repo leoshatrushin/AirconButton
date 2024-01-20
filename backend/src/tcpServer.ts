@@ -30,7 +30,10 @@ const tcpServer = net.createServer(socket => {
             // compare api key
             if (decoder.decode(apiKeyBuf) == SENSOR_API_KEY) {
                 sensorAuthenticated = true;
-                if (currentSocket) currentSocket.destroy();
+                if (currentSocket) {
+                    currentSocket.destroy();
+                    currentSocket = null;
+                }
                 currentSocket = socket;
                 currentSocket.setNoDelay(true);
                 console.log('sensor authenticated');
@@ -52,14 +55,23 @@ const tcpServer = net.createServer(socket => {
     });
 
     socket.on('end', () => {
-        console.log('sensor disconnected');
+        console.log('sensor ended');
         sensorAuthenticated = false;
+        currentSocket.destroy();
+        currentSocket = null;
+    });
+
+    socket.on('close', () => {
+        console.log('sensor closed');
+        sensorAuthenticated = false;
+        currentSocket.destroy();
         currentSocket = null;
     });
 
     socket.on('error', () => {
-        console.log('sensor disconnected with error');
+        console.log('sensor errored');
         sensorAuthenticated = false;
+        currentSocket.destroy();
         currentSocket = null;
     });
 });
