@@ -23,7 +23,9 @@ int Esp_tls_conn_write(esp_tls_t *tls, const void *data, int len) {
     while (written_bytes < len) {
         int bytes_written = esp_tls_conn_write(tls, data + written_bytes, len - written_bytes);
         if (bytes_written < 0 && bytes_written != ESP_TLS_ERR_SSL_WANT_READ && bytes_written != ESP_TLS_ERR_SSL_WANT_WRITE) {
-            ESP_LOGE(UTILS, "esp_tls_conn_write failed");
+            char buf[256];
+            mbedtls_strerror(bytes_written, buf, 255);
+            ESP_LOGE(UTILS, "esp_tls_conn_write failed: -0x%x - %s", -bytes_written, buf);
             return -1;
         }
         written_bytes += bytes_written;
@@ -36,7 +38,9 @@ int Esp_tls_conn_read(esp_tls_t *tls, void *data, int len) {
     while (read_bytes < len) {
         int bytes_read = esp_tls_conn_read(tls, data + read_bytes, len - read_bytes);
         if (bytes_read < 0 && bytes_read != ESP_TLS_ERR_SSL_WANT_READ && bytes_read != ESP_TLS_ERR_SSL_WANT_WRITE) {
-            ESP_LOGE(UTILS, "esp_tls_conn_read failed");
+            char buf[256];
+            mbedtls_strerror(bytes_read, buf, 255);
+            ESP_LOGE(UTILS, "esp_tls_conn_read failed: -0x%x - %s", -bytes_read, buf);
             return -1;
         }
         read_bytes += bytes_read;

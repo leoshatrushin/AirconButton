@@ -51,6 +51,8 @@ void app_main(void) {
     /* initialize_servo(); */
     
     int res;
+    int angle = 0;
+    rotate_servo(angle);
     while (true) {
         // initialize tls
         esp_tls_t *tls = esp_tls_init();
@@ -66,7 +68,6 @@ void app_main(void) {
         }
 
         // receive toggle requests from server
-        int angle = 0;
         while (true) {
             char buf[1];
             int bytes_read = Esp_tls_conn_read(tls, buf, 1);
@@ -74,11 +75,9 @@ void app_main(void) {
                 esp_tls_conn_destroy(tls);
                 break;
             }
-            if (bytes_read > 0) {
-                angle = (angle + 180) % 360;
-                ESP_LOGI(TAG, "Received toggle request: rotating servo to %d degrees", angle);
-                /* rotate_servo(angle); */
-            }
+            angle = (angle + 180) % 360;
+            ESP_LOGI(TAG, "Received toggle request: rotating servo to %d degrees", angle);
+            /* rotate_servo(angle); */
         }
     }
 }
