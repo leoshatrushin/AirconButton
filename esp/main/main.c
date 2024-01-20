@@ -8,9 +8,9 @@
 
 extern const uint8_t server_root_cert_pem_start[] asm(CERT_START);
 extern const uint8_t server_root_cert_pem_end[]   asm(CERT_END);
-
 #define TAG "main"
 #define RECONNECT_DELAY_MS 5000
+#define LOOP_DELAY_MS 1000
 
 int server_connect(esp_tls_t *tls) {
     int res;
@@ -47,11 +47,11 @@ void app_main(void) {
     initialize_wifi();
 
     // initialize servo
-    /* initialize_servo(); */
+    initialize_servo();
     
-    int res;
+    int bytes_written;
     int angle = 0;
-    /* rotate_servo(angle); */
+    rotate_servo(angle);
     while (true) {
         // wait for wifi connection
         xEventGroupWaitBits(s_wifi_event_group, WIFI_CONNECTED_BIT, pdFALSE, pdFALSE, portMAX_DELAY);
@@ -61,8 +61,8 @@ void app_main(void) {
         NULL_CHECK(tls);
 
         // connect to server
-        res = server_connect(tls);
-        if (res < 0) {
+        bytes_written = server_connect(tls);
+        if (bytes_written < 0) {
             esp_tls_conn_destroy(tls);
             // wait before attempting reconnect
             vTaskDelay(RECONNECT_DELAY_MS / portTICK_PERIOD_MS);
@@ -73,28 +73,39 @@ void app_main(void) {
         while (true) {
             // receive toggle request
             char buf[1];
-            int bytes_read = Esp_tls_conn_read(tls, buf, 1);
-            if (bytes_read < 0) {
+            int bytes_read = esp_tls_conn_read(tls, buf, 1);
+            if (bytes_read < 0
+                && bytes_read != ESP_TLS_ERR_SSL_WANT_READ
+                && bytes_read != ESP_TLS_ERR_SSL_WANT_WRITE) {
+                ESP_LOGE(TAG, "esp_tls_conn_read failed");
                 esp_tls_conn_destroy(tls);
                 // wait before attempting reconnect
                 vTaskDelay(RECONNECT_DELAY_MS / portTICK_PERIOD_MS);
                 break;
             }
             
-            // toggle servo
-            angle = (angle + 180) % 360;
-            ESP_LOGI(TAG, "Received toggle request: rotating servo to %d degrees", angle);
-            /* rotate_servo(angle); */
+            if (bytes_read == 1) {
+                // toggle servo
+                angle = (angle + 180) % 360;
+                ESP_LOGI(TAG, "Received toggle request: rotating servo to %d degrees", angle);
+                rotate_servo(angle);
 
-            // send response
-            buf[0] = 1;
-            res = Esp_tls_conn_write(tls, buf, 1);
-            if (res < 0) {
-                esp_tls_conn_destroy(tls);
-                // wait before attempting reconnect
-                vTaskDelay(RECONNECT_DELAY_MS / portTICK_PERIOD_MS);
-                break;
+                // send response
+                buf[0] = 1;
+                bytes_written = esp_tls_conn_write(tls, buf, 1);
+                if (bytes_written < 0
+                    && bytes_written != ESP_TLS_ERR_SSL_WANT_READ
+                    && bytes_written != ESP_TLS_ERR_SSL_WANT_WRITE) {
+                    ESP_LOGE(TAG, "esp_tls_conn_write failed");
+                    esp_tls_conn_destroy(tls);
+                    // wait before attempting reconnect
+                    vTaskDelay(RECONNECT_DELAY_MS / portTICK_PERIOD_MS);
+                    break;
+                }
             }
+
+            // wait before receiving next request
+            vTaskDelay(LOOP_DELAY_MS / portTICK_PERIOD_MS);
         }
     }
 }
