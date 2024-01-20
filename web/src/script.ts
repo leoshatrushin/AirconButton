@@ -15,6 +15,7 @@ const airconButton = document.getElementById('aircon-button');
 const sse = new EventSource(`${PROTOCOL}://${HOST}:${PORT}/stream`);
 sse.addEventListener('message', event => {
     state = Number(event.data);
+    console.log(state);
     airconButton.innerText = state ? 'ON' : 'OFF';
     airconButton.classList.toggle('on', state == 1);
     airconButton.classList.toggle('off', state == 0);
