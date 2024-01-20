@@ -19,6 +19,7 @@ const tcpServer = net.createServer(socket => {
     socket.on('data', async data => {
         // concatenate data to buffer
         streamReader.readInto(data);
+        console.log('data');
 
         // handle authentication
         if (!sensorAuthenticated) {
