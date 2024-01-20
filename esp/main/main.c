@@ -11,6 +11,7 @@ extern const uint8_t server_root_cert_pem_end[]   asm(CERT_END);
 #define TAG "main"
 #define RECONNECT_DELAY_MS 5000
 #define LOOP_DELAY_MS 1000
+#define SERVO_TEST
 
 int server_connect(esp_tls_t *tls) {
     int res;
@@ -43,12 +44,19 @@ int server_connect(esp_tls_t *tls) {
 }
 
 void app_main(void) {
+    // initialize servo
+    initialize_servo();
+    #ifdef SERVO_TEST
+    ESP_LOGI(TAG, "Testing servo");
+    rotate_servo(0);
+    vTaskDelay(2000 / portTICK_PERIOD_MS);
+    rotate_servo(180);
+    vTaskDelay(2000 / portTICK_PERIOD_MS);
+    #endif
+    
     // connect to wifi
     initialize_wifi();
 
-    // initialize servo
-    initialize_servo();
-    
     int bytes_written;
     int angle = 0;
     rotate_servo(angle);

@@ -1,6 +1,6 @@
 #include "driver/ledc.h"
 
-#define SERVO_GPIO_PIN 9
+#define SERVO_GPIO_PIN 22
 #define LEDC_MODE LEDC_LOW_SPEED_MODE
 #define LEDC_RESOLUTION LEDC_TIMER_16_BIT
 #define LEDC_TIMER LEDC_TIMER_0
@@ -31,7 +31,19 @@ void initialize_servo() {
 }
 
 void rotate_servo(int degrees) {
-    int duty_cycle = (degrees * (1 << LEDC_RESOLUTION) / 360);
+    // constants for the pulse widths corresponding to 0 and 180 degrees
+    const int min_pulse_width = 500; // in microseconds
+    const int max_pulse_width = 2500; // in microseconds
+
+    // linearly map the angle to the pulse width
+    int pulse_width = min_pulse_width + (max_pulse_width - min_pulse_width) * degrees / 180;
+
+    // convert pulse width to duty cycle
+    // assuming a frequency of 50 Hz, the total period is 20000 microseconds
+    int total_period = 20000; // in microseconds
+    int duty_cycle = (pulse_width * (1 << LEDC_RESOLUTION)) / total_period;
+
+    // rotate servo
     ledc_set_duty(LEDC_MODE, LEDC_CHANNEL, duty_cycle);
     ledc_update_duty(LEDC_MODE, LEDC_CHANNEL);
 }
