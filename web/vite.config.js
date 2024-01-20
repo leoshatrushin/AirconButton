@@ -5,6 +5,7 @@ export default defineConfig(({ mode }) => {
     return {
         root: 'src',
         build: {
+            outDir: '../dist',
             rollupOptions: {
                 input: {
                     main: 'src/index.html',
