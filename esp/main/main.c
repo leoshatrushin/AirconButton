@@ -71,15 +71,30 @@ void app_main(void) {
 
         // receive toggle requests from server
         while (true) {
+            // receive toggle request
             char buf[1];
             int bytes_read = Esp_tls_conn_read(tls, buf, 1);
             if (bytes_read < 0) {
                 esp_tls_conn_destroy(tls);
+                // wait before attempting reconnect
+                vTaskDelay(RECONNECT_DELAY_MS / portTICK_PERIOD_MS);
                 break;
             }
+            
+            // toggle servo
             angle = (angle + 180) % 360;
             ESP_LOGI(TAG, "Received toggle request: rotating servo to %d degrees", angle);
             /* rotate_servo(angle); */
+
+            // send response
+            buf[0] = 1;
+            res = Esp_tls_conn_write(tls, buf, 1);
+            if (res < 0) {
+                esp_tls_conn_destroy(tls);
+                // wait before attempting reconnect
+                vTaskDelay(RECONNECT_DELAY_MS / portTICK_PERIOD_MS);
+                break;
+            }
         }
     }
 }
