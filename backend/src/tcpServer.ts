@@ -38,14 +38,18 @@ const tcpServer = net.createServer(socket => {
             }
         }
 
-        // handle toggle status responses
-        const statusBuf = streamReader.readBytes(1);
-        const sensorStatus = Number(decoder.decode(statusBuf));
-        if (sensorStatus == SENSOR_STATUS_SUCCESS) {
-            tcpEvent.emit('success');
-        } else {
-            tcpEvent.emit('failure');
+        // handle toggle status response
+        while (streamReader.bytesLeft > 0) {
+            const statusBuf = streamReader.readBytes(1);
+            const sensorStatus = statusBuf[0];
+            if (sensorStatus == SENSOR_STATUS_SUCCESS) {
+                tcpEvent.emit('success');
+            } else {
+                tcpEvent.emit('failure');
+            }
         }
+
+        streamReader.eraseProcessedBytes();
     });
 
     socket.on('end', () => {
