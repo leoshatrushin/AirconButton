@@ -68,9 +68,9 @@ const tcpServer = net.createServer(socket => {
 export async function sendToggle() {
     return new Promise<void>((resolve, reject) => {
         if (currentSocket) {
-            currentSocket.write('toggle');
+            currentSocket.write('1');
             const timeout = setTimeout(() => {
-                reject('Sensor not responding');
+                reject('sensor not responding');
             }, 1000);
             tcpEvent.on('success', () => {
                 clearTimeout(timeout);
@@ -79,10 +79,10 @@ export async function sendToggle() {
             });
             tcpEvent.on('failure', () => {
                 clearTimeout(timeout);
-                reject('Sensor failed to toggle');
+                reject('sensor failed to toggle');
             });
         } else {
-            reject('Sensor not connected');
+            reject('sensor not connected');
         }
     });
 }

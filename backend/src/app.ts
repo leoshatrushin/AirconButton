@@ -61,6 +61,7 @@ app.post('/toggle', express.json(), async function toggle(_, res) {
         appEvent.emit('success', state.status);
         res.writeHead(200);
     } catch (e) {
+        console.error(e);
         res.writeHead(500);
     } finally {
         res.end();
