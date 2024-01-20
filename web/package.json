@@ -5,8 +5,8 @@
     "main": "index.js",
     "type": "module",
     "scripts": {
-        "dev": "vite build --mode dev --watch",
-        "prod": "vite build --mode prod"
+        "dev": "vite build --mode dev --watch --emptyOutDir",
+        "prod": "vite build --mode prod --emptyOutDir"
     },
     "keywords": [],
     "author": "",
