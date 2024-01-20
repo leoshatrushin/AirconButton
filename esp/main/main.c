@@ -45,15 +45,17 @@ int server_connect(esp_tls_t *tls) {
 void app_main(void) {
     // connect to wifi
     initialize_wifi();
-    xEventGroupWaitBits(s_wifi_event_group, WIFI_CONNECTED_BIT, pdFALSE, pdFALSE, portMAX_DELAY);
 
     // initialize servo
     /* initialize_servo(); */
     
     int res;
     int angle = 0;
-    rotate_servo(angle);
+    /* rotate_servo(angle); */
     while (true) {
+        // wait for wifi connection
+        xEventGroupWaitBits(s_wifi_event_group, WIFI_CONNECTED_BIT, pdFALSE, pdFALSE, portMAX_DELAY);
+
         // initialize tls
         esp_tls_t *tls = esp_tls_init();
         NULL_CHECK(tls);
