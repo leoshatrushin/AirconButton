@@ -74,18 +74,22 @@ export async function sendToggle() {
             currentSocket.write('1');
             const timeout = setTimeout(() => {
                 reject('sensor not responding');
+                tcpEvent.removeListener('success', onSuccessfulToggle);
+                tcpEvent.removeListener('failure', onFailedToggle);
             }, SENSOR_TIMEOUT);
-            tcpEvent.on('success', () => {
+            function onSuccessfulToggle() {
                 clearTimeout(timeout);
-                console.log('old state', state.status);
                 state.status = state.status ? 0 : 1;
-                console.log('new state', state.status);
+                tcpEvent.removeListener('failure', onFailedToggle);
                 resolve();
-            });
-            tcpEvent.on('failure', () => {
+            }
+            function onFailedToggle() {
                 clearTimeout(timeout);
+                tcpEvent.removeListener('success', onSuccessfulToggle);
                 reject('sensor failed to toggle');
-            });
+            }
+            tcpEvent.on('success', onSuccessfulToggle);
+            tcpEvent.on('failure', onFailedToggle);
         } else {
             reject('sensor not connected');
         }
