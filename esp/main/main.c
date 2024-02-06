@@ -11,7 +11,7 @@ extern const uint8_t server_root_cert_pem_end[]   asm(CERT_END);
 #define TAG "main"
 #define RECONNECT_DELAY_MS 5000
 #define LOOP_DELAY_MS 1000
-#define SERVO_TEST
+/* #define SERVO_TEST */
 
 int server_connect(esp_tls_t *tls) {
     int res;
